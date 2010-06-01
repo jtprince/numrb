@@ -1,17 +1,20 @@
-= numrub
+= Numrub
 
-Description goes here.
+An experimental library aimed at providing support for numeric arrays that are manipulatable with C inside ruby using FFI-inliner.
 
-== Note on Patches/Pull Requests
+== Examples
+
+require 'numrub'
+
+class MyNumrub < Numrub
+  extend Inliner
+
+end
+
+nr = Numrub.new([1,2,3,4,5])
+sum = nr.sum
  
-* Fork the project.
-* Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a
-  future version unintentionally.
-* Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
-* Send me a pull request. Bonus points for topic branches.
 
-== Copyright
+== Copying
 
-Copyright (c) 2010 John Prince. See LICENSE for details.
+See LICENSE
