@@ -10,5 +10,4 @@ module Timer
     block.call
     Time.now - start
   end
-
 end
