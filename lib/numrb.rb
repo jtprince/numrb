@@ -1,25 +1,26 @@
 require 'ffi-inliner'
 
-module Numrub
-  class NumrubStruct < FFI::Struct
-    layout :rank, :int,  #  # of dimensions
-      :total, :int,  # total number of elements
-      :type, :int,  # the data type
-      :shape, :pointer, 
-      :data, :pointer
-    # right now just working for one dimension
-    def self.to_nr(array)
-      obj = self.new
-      obj[:total] = array.size
-      obj[:rank] = 1
-      obj[:type] = 9990  # update
-      obj[:shape] = FFI::MemoryPointer.new(:int, 1).put_array_of_int(0, [array.size])
-      obj[:data] = FFI::MemoryPointer.new(:double, array.size).put_array_of_int(0, array)
-      obj
-    end
+
+class Numrb < FFI::Struct
+  layout :ndim, :int,  #  # of dimensions
+    :size, :int,  # total number of elements
+    :dtype, :int,  # the data type
+    :shape, :pointer, 
+    :ptr, :pointer
+  # right now just working for one dimension
+  def self.to_nr(array)
+    obj = self.new
+    obj[:total] = array.size
+    obj[:rank] = 1
+    obj[:dtype] = 9990  # update
+    obj[:shape] = FFI::MemoryPointer.new(:int, 1).put_array_of_int(0, [array.size])
+    obj[:ptr] = FFI::MemoryPointer.new(:double, array.size).put_array_of_int(0, array)
+    obj
   end
 
-  extend Inliner
+end
+
+extend Inliner
 
   inline do |build|
     build.map 'numrub_struct *' => 'pointer'
@@ -27,9 +28,9 @@ module Numrub
       typedef struct {
         int rank;
         int total;
-        int type;
+        int dtype;
         int *shape;   
-        char *data;   
+        char *ptr;   
       } numrub_struct;
     }
     build.c %q{

@@ -1,19 +1,15 @@
-= Numrub
+= Numrb
 
-An experimental library aimed at providing support for numeric arrays that are manipulatable with C inside ruby using FFI-inliner.
+An experimental library aimed at providing support for numeric arrays that are manipulatable with C inside ruby using FFI-inliner.  This is meant to be as stable and full featured as the other Num** but slightly more enchanting.
 
 == Examples
 
-require 'numrub'
+require 'numrb'
 
-class MyNumrub < Numrub
-  extend Inliner
+a = Numrb[10,20,30,40]
+a = Numrb([10,20,30,40])
+a = Numrb.new(dtype, size, ...) #initialize with 0
 
-end
-
-nr = Numrub.new([1,2,3,4,5])
-sum = nr.sum
- 
 
 == Copying
 

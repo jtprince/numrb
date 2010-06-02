@@ -13,12 +13,14 @@ class Array
 end
 
 describe "initializing a Numrub" do
-  it 'initializes with an array' do
-    array = [1,2,3,4,5,6,7]
-    x = Numrub::NumrubStruct.to_nr(array)
-    ok x.is_a?(Object)
-    x[:total].is array.size
-    x[:rank].is 1
+  before do
+    @ar = [10,20,30,40]
+  end
+
+  it 'takes a list in brackets' do
+    v = Numrb[*@ar]
+    v.is_a?(Numrb)
+    v.size.is @ar.size
   end
 
   it 'can be passed out of a function as a pointer with FFI-Inliner' do
