@@ -1,12 +1,49 @@
 require 'ffi-inliner'
 
-class Numrub
-  TYPE = :float
+module Numrub
+  class NumrubStruct < FFI::Struct
+    layout :rank, :int,  #  # of dimensions
+      :total, :int,  # total number of elements
+      :type, :int,  # the data type
+      :shape, :pointer, 
+      :data, :pointer
+    # right now just working for one dimension
+    def self.to_nr(array)
+      obj = self.new
+      obj[:total] = array.size
+      obj[:rank] = 1
+      obj[:type] = 9990  # update
+      obj[:shape] = FFI::MemoryPointer.new(:int, 1).put_array_of_int(0, [array.size])
+      obj[:data] = FFI::MemoryPointer.new(:double, array.size).put_array_of_int(0, array)
+      obj
+    end
+  end
 
-  attr_accessor :pointer
-  attr_accessor :size
-  alias_method :length, :size
+  extend Inliner
 
+  inline do |build|
+    build.map 'numrub_struct *' => 'pointer'
+    build.c_raw %q{
+      typedef struct {
+        int rank;
+        int total;
+        int type;
+        int *shape;   
+        char *data;   
+      } numrub_struct;
+    }
+    build.c %q{
+      numrub_struct* pass_out_as_pointer(numrub_struct *my_struct) { 
+        return my_struct; 
+      }
+    }
+  end
+end
+
+
+  
+
+=begin
   extend Inliner
   inline %Q{
     #{TYPE} get(#{TYPE} *data, int n) {
@@ -64,3 +101,4 @@ class Numrub
   end
 end
 
+=end
