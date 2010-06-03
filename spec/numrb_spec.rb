@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-require 'numrub'
+require 'numrb'
 require 'benchmark'
 
 class Array
@@ -13,16 +13,30 @@ class Array
 end
 
 describe "initializing a Numrub" do
+
+  def properly_initialized(array)
+    lambda do |obj|
+      obj.is_a?(Numrb)
+      obj.size.is @ar.size
+    end
+  end
+
   before do
     @ar = [10,20,30,40]
   end
 
   it 'takes a list in brackets' do
-    v = Numrb[*@ar]
-    v.is_a?(Numrb)
-    v.size.is @ar.size
+    Numrb[*@ar].should.be properly_initialized(@ar)
   end
+end
 
+describe 'casting' do
+  it 'can be cast from a pointer' do
+    FFI::Pointer.new 
+  end
+end
+
+xdescribe "basic functions" do
   it 'can be passed out of a function as a pointer with FFI-Inliner' do
     array = [1,2,3,4,5,6,7]
     my_struct = Numrub::NumrubStruct.to_nr(array)
@@ -59,3 +73,69 @@ xdescribe "Numrub with a simple numerical array" do
   end
 
 end
+
+
+
+
+=begin
+# File 'lib/ffi/pointer.rb', line 113
+
+def write_array_of_type(type, writer, ary)
+  size = FFI.type_size(type)
+  tmp = self
+  ary.each_with_index {|i, j|
+    tmp.send(writer, i)
+    tmp += size unless j == ary.length-1 # avoid OOB
+  }
+  self
+end
+
+# File 'lib/ffi/pointer.rb', line 102
+
+def read_array_of_type(type, reader, length)
+  ary = []
+  size = FFI.type_size(type)
+  tmp = self
+  length.times { |j|
+    ary << tmp.send(reader)
+    tmp += size unless j == length-1 # avoid OOB
+  }
+  ary
+end
+
+=end
+
+
+=begin
+# these seem to be the available functions for getting things in/out
+put_array_of_int8
+put_array_of_int16
+put_array_of_int32
+put_array_of_int64
+put_array_of_long
+
+put_array_of_uint8
+put_array_of_uint16
+put_array_of_uint32
+put_array_of_uint64
+put_array_of_ulong
+
+put_array_of_char       # -> int8
+put_array_of_short      # -> int16
+put_array_of_int        # -> int32
+put_array_of_long_long  # -> int64
+
+put_array_of_uchar       # -> uint8
+put_array_of_ushort      # -> uint16
+put_array_of_uint        # -> uint32
+put_array_of_ulong_long  # -> uint64
+
+put_array_of_float32
+put_array_of_float     # ->   put_array_of_float32
+put_array_of_float64
+put_array_of_double    # ->   put_array_of_float64
+
+put_array_of_pointer
+
+get_array_of_string  # there is no put_array_of_string
+=end

@@ -1,6 +1,5 @@
 require 'ffi-inliner'
 
-
 class Numrb < FFI::Struct
   layout :ndim, :int,  #  # of dimensions
     :size, :int,  # total number of elements
@@ -9,6 +8,7 @@ class Numrb < FFI::Struct
     :ptr, :pointer
   # right now just working for one dimension
   def self.to_nr(array)
+     
     obj = self.new
     obj[:total] = array.size
     obj[:rank] = 1
@@ -18,6 +18,7 @@ class Numrb < FFI::Struct
     obj
   end
 
+  alias_method :cast, :initialize
 end
 
 extend Inliner

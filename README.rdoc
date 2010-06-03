@@ -4,12 +4,11 @@ An experimental library aimed at providing support for numeric arrays that are m
 
 == Examples
 
-require 'numrb'
+    require 'numrb'
 
-a = Numrb[10,20,30,40]
-a = Numrb([10,20,30,40])
-a = Numrb.new(dtype, size, ...) #initialize with 0
-
+    a = Numrb[10,20,30,40]
+    a = Numrb([10,20,30,40])
+    a = Numrb.new(dtype, size, ...) #initialize with 0
 
 == Copying
 
