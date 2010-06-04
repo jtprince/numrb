@@ -1,6 +1,10 @@
 require 'ffi-inliner'
 
 class Numrb < FFI::Struct
+  TYPES = [:float, :double, :int, :long]
+  alias_method :cast, :initialize
+  alias_method :bitsize, :size
+
   layout :ndim, :int,  #  # of dimensions
     :size, :int,  # total number of elements
     :dtype, :int,  # the data type
@@ -8,39 +12,60 @@ class Numrb < FFI::Struct
     :ptr, :pointer
   # right now just working for one dimension
   def self.to_nr(array)
-     
     obj = self.new
-    obj[:total] = array.size
-    obj[:rank] = 1
+    obj[:size] = array.size
+    obj[:ndim] = 1
     obj[:dtype] = 9990  # update
     obj[:shape] = FFI::MemoryPointer.new(:int, 1).put_array_of_int(0, [array.size])
     obj[:ptr] = FFI::MemoryPointer.new(:double, array.size).put_array_of_int(0, array)
     obj
   end
 
-  alias_method :cast, :initialize
-end
+  def size ; self[:size] end
+  def ndim ; self[:ndim] end
+  def dtype; self[:dtype] end
 
-extend Inliner
+  alias_method :length, :size
+
+  extend Inliner
 
   inline do |build|
-    build.map 'numrub_struct *' => 'pointer'
+    build.map 'numrb_struct *' => 'pointer'
     build.c_raw %q{
       typedef struct {
-        int rank;
-        int total;
+        int ndim;
+        int size;
         int dtype;
         int *shape;   
         char *ptr;   
-      } numrub_struct;
+      } numrb_struct;
     }
     build.c %q{
-      numrub_struct* pass_out_as_pointer(numrub_struct *my_struct) { 
+      numrb_struct* pass_out_as_pointer(numrb_struct *my_struct) { 
         return my_struct; 
       }
     }
+    #TYPES.each do |tp|
+    #build.c %Q{
+    #  #{tp}* get(numrb_struct* strct, *ar) {
+    #    
+    #  }
+    #}
   end
+
+  def self.[](*args)
+    self.to_nr(args) 
+  end
+
+  module Util
+    # scans the array and returns the highest common type as a symbol
+    def array_type
+    end
+
+  end
+
 end
+
 
 
   

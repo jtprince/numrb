@@ -26,11 +26,13 @@ describe "initializing a Numrub" do
   end
 
   it 'takes a list in brackets' do
-    Numrb[*@ar].should.be properly_initialized(@ar)
+    ar = Numrb[*@ar]
+    ar.should.be properly_initialized(@ar)
+    ar
   end
 end
 
-describe 'casting' do
+xdescribe 'casting' do
   it 'can be cast from a pointer' do
     FFI::Pointer.new 
   end
