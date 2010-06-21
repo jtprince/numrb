@@ -2,13 +2,17 @@
 
 An experimental library aimed at providing support for numeric arrays that are manipulatable with C inside ruby using FFI-inliner.  This is meant to be as stable and full featured as the other Num** but slightly more enchanting.
 
+Very experimental right now.
+
 == Examples
 
-    require 'numrb'
+    require 'numrb/vec'
+    include Numrb
 
-    a = Numrb[10,20,30,40]
-    a = Numrb([10,20,30,40])
-    a = Numrb.new(dtype, size, ...) #initialize with 0
+    a = Vec[10,20,30,40]
+    a = Vec.to_nr([10,20,30,40])
+    a = Vec.new(dtype, size)
+    sum = a.sum  # 100 times faster than normal array (for large arrays)
 
 == Copying
 
