@@ -91,15 +91,20 @@ describe 'indexing' do
 
     (@nrb_int[2] = 90).is 90
     @nrb_int[2].is 90
-    puts "ACCESS: "
-    struct = @nrb_int.struct
-    puts Timer.measure { 1000000.times {@nrb_int[2]} }
-    puts Timer.measure { 1000000.times {struct.get(struct,2)} }
-    puts Timer.measure { 1000000.times {@ar_int[2]} }
-    puts "SETTING: "
-    puts Timer.measure { 1000000.times {@nrb_int[2]=2} }
-    puts Timer.measure { 1000000.times {struct.set(struct,2,2)} }
-    puts Timer.measure { 1000000.times {@ar_int[2]=2} }
+
+    #puts "ACCESS: "
+    #struct = @nrb_int.struct
+    #ptr = @nrb_int.struct[:ptr]
+    #puts Timer.measure { 1000000.times {@nrb_int[2]} }
+    #puts Timer.measure { 1000000.times {struct.get(struct,2)} }
+    #puts Timer.measure { 1000000.times {struct[:ptr].get_int32(0)} }
+    #puts Timer.measure { 1000000.times {Numrb::Vec::Data::Access.getit(ptr,2)} }
+    #puts Timer.measure { 1000000.times {ptr.get_int32(0)} }
+    #puts Timer.measure { 1000000.times {@ar_int[2]} }
+    #puts "SETTING: "
+    #puts Timer.measure { 1000000.times {@nrb_int[2]=2} }
+    #puts Timer.measure { 1000000.times {struct.set(struct,2,2)} }
+    #puts Timer.measure { 1000000.times {@ar_int[2]=2} }
   end
 
   it "Raises an error on negative index" do
@@ -135,11 +140,10 @@ describe 'folding operations' do
     results[0].is 2000000.0  # sanity
     results[0].is results[1]
     ok( (array_time / nub_time) > 50 )
-    puts ""
-    puts "--- TIME to SUM ARRAY: #{array_time}"
-    puts "--- TIME to SUM VEC: #{nub_time}"
+    #puts ""
+    #puts "--- TIME to SUM ARRAY: #{array_time}"
+    #puts "--- TIME to SUM VEC: #{nub_time}"
   end
-
 
 end
   

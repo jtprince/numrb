@@ -5,12 +5,6 @@ require 'set'
 #$ALLOC_COUNT = 0
 
 
-module Inliner
-  C_TO_FFI.merge({ })
-end
-
-
-
 module Numrb
 
   #C_TO_FFI = {
@@ -34,6 +28,34 @@ module Numrb
 
   class Vec
 
+    class Data < FFI::AutoPointer
+      module LibC
+        extend FFI::Library
+        ffi_lib 'c'
+        attach_function :malloc, [ :uint ], :pointer
+        attach_function :free, [ :pointer ], :void
+      end
+      module Access
+        extend Inliner
+        inline %q{
+          int getit(int * ptr, int index) {
+            return ptr[index];
+          }
+        }
+      end
+      def self.release(ptr)
+        #$ALLOC_COUNT -= 1
+        #puts "RELEASING (CNT: #{$ALLOC_COUNT}"
+        LibC.free(ptr)
+      end
+      def initialize(size, stride=8)
+        #$ALLOC_COUNT += 1
+        #puts "ALLOCATED (CNT: #{$ALLOC_COUNT}"
+        # malloc(1) == 1 char [fundamental unit of C]
+        super(LibC.malloc(size*stride))
+      end
+    end
+
 
     TYPES = {:int => 'int32_t', :long_long => 'long long', :float => 'float', :double => 'double'}
     TYPES_AR = [:int, :long_long, :float, :double]
@@ -52,25 +74,6 @@ module Numrb
     #BIGGER = {:int => 'int64_t', :long_long => 'int64_t', :float => 'double', :double => 'double'}
     #ZERO = {:int => '0', :long_long => '0', :float => '0.f', :double => '0.0'}
 
-    class Data < FFI::AutoPointer
-      module LibC
-        extend FFI::Library
-        ffi_lib 'c'
-        attach_function :malloc, [ :uint ], :pointer
-        attach_function :free, [ :pointer ], :void
-      end
-      def self.release(ptr)
-        #$ALLOC_COUNT -= 1
-        #puts "RELEASING (CNT: #{$ALLOC_COUNT}"
-        LibC.free(ptr)
-      end
-      def initialize(size, stride=8)
-        #$ALLOC_COUNT += 1
-        #puts "ALLOCATED (CNT: #{$ALLOC_COUNT}"
-        # malloc(1) == 1 char [fundamental unit of C]
-        super(LibC.malloc(size*stride))
-      end
-    end
 
     TYPES.each do |dtp, ctype|
       klass = Vec.const_set("Struct_#{dtp}", Class.new(FFI::Struct))
@@ -169,7 +172,6 @@ module Numrb
     def size ; @struct[:size] end
     alias_method :length, :size
 
-    # this will be slow compared to array access
     def [](index)
       # this pure ruby call is 6X slower than doing the C call
       # of course, this is a *really* indirect method call
